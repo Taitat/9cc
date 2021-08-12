@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "c_debug",
+          "type": "lldb",
+          "request": "launch",
+          "program": "${fileDirname}/a.out",
+          "args": ["./test/ex_1"],
+          "cwd": "${fileDirname}",
+          "preLaunchTask": "c_build",
+          "postDebugTask": "rm_file"
+      }
+  ]
+}
