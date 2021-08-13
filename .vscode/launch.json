@@ -1,12 +1,21 @@
 {
   "version": "0.2.0",
+  "inputs": [
+      {
+          "type": "promptString",
+          "id": "prompt",
+          "description": "引数を入力してください。",
+          "default": "デフォルトの文字列です。"
+      }
+  ],
   "configurations": [
       {
           "name": "c_debug",
           "type": "lldb",
           "request": "launch",
           "program": "${fileDirname}/a.out",
-          "args": ["./test/ex_1"],
+          "console": "integratedTerminal",
+          "args": ["${input:prompt}"],
           "cwd": "${fileDirname}",
           "preLaunchTask": "c_build",
           "postDebugTask": "rm_file"
