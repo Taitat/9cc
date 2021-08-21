@@ -109,7 +109,7 @@ Token *tokenize() { // *p には渡された文字列の1文字目が入る
     }
 
     // 記号がきたときは記号のトークンを作成して、curに繋げる
-    if (*p == '+' || *p == '-') {
+    if (strchr("+-*/()", *p)) {
       cur = new_token(TK_RESERVED, cur, p++); /* なぜpをインクリメントする？ */ 
       continue;
     }
