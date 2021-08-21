@@ -174,6 +174,7 @@ Node *new_num(int val) {
 
 Node *expr();
 Node *mul();
+Node *unary();
 Node *primary();
 
 // expr = mul("+" mul | "-" mul)*
@@ -196,18 +197,30 @@ Node *expr() {
   }
 }
 
-// mul = primary ("*" primary | "/" primary)*
+// mul = unary ("*" unary | "/" unary)*
 Node *mul() {
-  Node *node = primary();
+  Node *node = unary();
 
   for (;;) {
     if (consume('*'))
-      node = new_binary(ND_MUL, node, primary());
+      node = new_binary(ND_MUL, node, unary());
     else if (consume('/'))
-      node = new_binary(ND_DIV, node, primary());
+      node = new_binary(ND_DIV, node, unary());
     else
       return node;
   }
+}
+
+// unary = ("+" | "-")? unary | primary
+// 単項演算子用
+Node *unary() {
+  // '+'は意味がなく右辺そのものと同義なので、ただトークンを進める
+  if (consume('+'))
+    return unary();
+  // '-'は右辺の反転の意味なので、次のトークン（右辺）を０から引いて反転させる式のノードを作る
+  if (consume('-'))
+    return new_binary(ND_SUB, new_num(0), unary());
+  return primary();
 }
 
 // primary = "(" expr ")" | num
