@@ -18,7 +18,7 @@ typedef struct Token Token;
 // Token型 ポインタnextによって自己参照構造体になり、連結リストの形を取る
 struct Token {
   TokenKind kind;
-  Token *next;
+  Token *next; // nextはToken型のポインタ。次のトークンのメモリ位置が入っている。
   int val;
   char *str;
 };
