@@ -162,6 +162,10 @@ typedef enum {
   ND_SUB, // -
   ND_MUL, // *
   ND_DIV, // /
+  ND_EQ,  // ==
+  ND_NE,  // !=
+  ND_LT,  // <
+  ND_LE,  // <=
   ND_NUM, // Integer
 } NodeKind;
 
@@ -300,6 +304,29 @@ void gen(Node *node) {
     // idivは、RDXとRAXを合わせたものを128bit整数と見做して、それを引数のレジスタ(RDI)の64bitの値で割り、
     // 商をRAXへ、余りをRDXへセットする。その下準備に上記のcqoが必要。
     printf("  idiv rdi\n");
+    break;
+  case ND_EQ:
+    printf("  cmp rax, rdi\n");  // スタックトップからポップしてきたレジスタの値二つを比較する
+    printf("  sete al\n");       // 上記のcmp命令で比較した結果が同じだった場合は、ALレジスタに1をセットする。そうでなければ0。
+    // ALはRAXの下位8ビットのこと。ALにセットするということはRAXを変更することになるが、
+    // 残りの上位56ビットは変更前の値のままになるので、ここをゼロクリアする必要がある。それを行うのがmovzx命令。
+    // （オリジナルだとmovzbだがエラーになるので、movzxを使用する）
+    printf("  movzx rax, al\n");
+    break;
+  case ND_NE:
+    printf("  cmp rax, rdi\n");
+    printf("  setne al\n");
+    printf("  movzx rax, al\n");
+    break;
+  case ND_LT:
+    printf("  cmp rax, rdi\n");
+    printf("  setl al\n");
+    printf("  movzx rax, al\n");
+    break;
+  case ND_LE:
+    printf("  cmp rax, rdi\n");
+    printf("  setle al\n");
+    printf("  movzx rax, al\n");
     break;
   }
 
