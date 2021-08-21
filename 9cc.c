@@ -269,9 +269,9 @@ Node *mul() {
   Node *node = unary();
 
   for (;;) {
-    if (consume('*'))
+    if (consume("*"))
       node = new_binary(ND_MUL, node, unary());
-    else if (consume('/'))
+    else if (consume("/"))
       node = new_binary(ND_DIV, node, unary());
     else
       return node;
@@ -282,10 +282,10 @@ Node *mul() {
 // 単項演算子用
 Node *unary() {
   // '+'は意味がなく右辺そのものと同義なので、ただトークンを進める
-  if (consume('+'))
+  if (consume("+"))
     return unary();
   // '-'は右辺の反転の意味なので、次のトークン（右辺）を０から引いて反転させる式のノードを作る
-  if (consume('-'))
+  if (consume("-"))
     return new_binary(ND_SUB, new_num(0), unary());
   return primary();
 }
@@ -293,12 +293,12 @@ Node *unary() {
 // primary = "(" expr ")" | num
 // primaryはexprを再帰的に呼び出すか、数値をそのまま返す。
 Node *primary() {
-  if (consume('(')) {
+  if (consume("(")) {
     // '(' が来たということは、その次に式が来るはずなので、再びexpr()を呼び出して部分木を構築する
     Node *node = expr();
     // 式が消費できなくなった時点でexpr()はreturnされる。
     // その直後に')'が来ていれば式の終わりなので、トークンを進めて、ここまで括弧内の式で構築した部分木を返す。
-    expect(')');
+    expect(")");
     return node;
   }
 
