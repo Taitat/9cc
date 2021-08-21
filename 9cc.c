@@ -200,22 +200,62 @@ Node *new_num(int val) {
 }
 
 Node *expr();
+Node *equality();
+Node *relational();
+Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
 
-// expr = mul("+" mul | "-" mul)*
+// expr = equality
 Node *expr() {
+  return equality();
+}
+
+
+//equality = relational ("==" relational | "!=" relational)*
+Node *equality(){
+  Node *node = relational();
+
+  for (;;) {
+    if (consume("=="))
+      node = new_binary(ND_EQ, node, relational());
+    else if (consume("!="))
+      node = new_binary(ND_NE, node, relational());
+    else
+      return node;
+  }
+}
+
+// relational = add ("<" add | "<=" add | ">" add | ">=" add)*
+Node *relational() {
+  Node *node = add();
+
+  for (;;) {
+    if (consume("<"))
+      node = new_binary(ND_LT, node, add());
+    else if (consume("<="))
+      node = new_binary(ND_LE, node, add());
+    else if (consume(">"))
+      node = new_binary(ND_LT, add(), node);
+    else if (consume(">="))
+      node = new_binary(ND_LE, add(), node);
+    else
+      return node;
+  }
+}
+
+Node *add() {
   // ①mul()の返り値を得る
   Node *node = mul();
 
   for(;;){
     // ②次のトークンが'+' or '-'ならトークンを次に進める。
-    if (consume('+'))
+    if (consume("+"))
       // ③二項演算子のノードを作る
       // 左辺が①の結果、右辺が②によって進んだ次のトークンをmul()にかけたもの。
       node = new_binary(ND_ADD, node, mul());
-    else if (consume('-'))
+    else if (consume("-"))
       node = new_binary(ND_SUB, node, mul());
     else
       // 何かしらの式が来た時には、exprかmulのfor文によって構文木のトップは二項演算子ノードになる
