@@ -1,5 +1,11 @@
 {
   "cSpell.words": [
-    "noprefix"
+    "idiv",
+    "movzb",
+    "movzx",
+    "noprefix",
+    "sete",
+    "setle",
+    "setne"
   ]
 }
