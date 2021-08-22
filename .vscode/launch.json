@@ -13,7 +13,7 @@
           "name": "c_debug",
           "type": "lldb",
           "request": "launch",
-          "program": "${fileDirname}/a.out",
+          "program": "${workspaceFolder}/9cc",
           "console": "integratedTerminal",
           "args": ["${input:prompt}"],
           "cwd": "${fileDirname}",
