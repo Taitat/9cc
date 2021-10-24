@@ -28,12 +28,31 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
+Node *assign();
+Node *stmt();
+void program();
 
-// expr = equality
-Node *expr() {
-  return equality();
+
+Node *code[100];
+
+// assign = equality ( "=" assign)?
+Node *assign(){
+  Node *node = equality();
+  if (consume("="))
+    node = new_binary(ND_ASSIGN, node, assign());
+  return node;
 }
 
+// expr = assign
+Node *expr() {
+  return assign();
+}
+
+Node *stmt() {
+  Node *node = expr();
+  expect(";");
+  return node;
+}
 
 //equality = relational ("==" relational | "!=" relational)*
 Node *equality(){
@@ -47,6 +66,16 @@ Node *equality(){
     else
       return node;
   }
+}
+
+// expr ";"
+void program() {
+  int i = 0;
+  // 終端を示すトークンが来るまで、ステートメントごとにグローバル変数 code に格納していく
+  // 終端が来ると、目印にNULLを格納する
+  while (!at_eof())
+    code[i++] = stmt();
+  code[i] = NULL;
 }
 
 // relational = add ("<" add | "<=" add | ">" add | ">=" add)*
