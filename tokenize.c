@@ -32,6 +32,14 @@ bool consume(char *op){
   return true;
 }
 
+Token *consume_ident(){
+  if (token->kind != TK_IDENT){
+    return false;
+  }
+  token = token->next;
+  return token;
+}
+
 // トークンが期待している記号の場合はトークンを次に進める
 // そうでないならエラーを報告する
 void expect(char *op){
@@ -97,10 +105,11 @@ Token *tokenize() { // *p には渡された文字列の1文字目が入る
 
     // 1文字から成る演算子
     // 記号がきたときは記号のトークンを作成して、curに繋げる
-    if (strchr("+-*/()<>", *p)) {
+    if (strchr(";=+-*/()<>", *p)) {
       cur = new_token(TK_RESERVED, cur, p++, 1); /* なぜpをインクリメントする？ */ 
       continue;
     }
+
 
     // 数字が来たときは、数字のトークンを作成してcurに繋げる
     // 数字と認識できるところまでを現在のトークンのvalへ格納し、
@@ -112,6 +121,12 @@ Token *tokenize() { // *p には渡された文字列の1文字目が入る
       cur->val = strtol(p, &p, 10);
       // 数字をとって残ったpのアドレスとqの差分をトークンの長さとしてlenメンバへセット
       cur->len = p - q; 
+      continue;
+    }
+
+    if ('a' <= *p && *p <= 'z') {
+      cur = new_token(TK_IDENT, cur, p++, 1);
+      cur->len = 1;
       continue;
     }
 
