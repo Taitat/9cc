@@ -32,6 +32,14 @@ bool consume(char *op){
   return true;
 }
 
+Token *consume_ident(){
+  if (token->kind != TK_IDENT){
+    return false;
+  }
+  token = token->next;
+  return token;
+}
+
 // トークンが期待している記号の場合はトークンを次に進める
 // そうでないならエラーを報告する
 void expect(char *op){
