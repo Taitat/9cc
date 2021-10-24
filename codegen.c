@@ -3,13 +3,38 @@
 // Code generator
 //
 
+
+void gen_lval(Node *node) {
+  if (node->kind != ND_LVAR)
+    error("代入の左辺値が変数ではありません");
+  printf("  mov rax, rbp\n");
+  printf("  sub rax %d\n", node->offset);
+}
+
 // pushやpopはx86-64のRSPレジスタを暗黙的にスタックポインタとして使用し、
 // その値を変更しつつ、RSPが指しているメモリにアクセスする
 void gen(Node *node) {
+  switch (node->kind){
   // 数値が来たときはそのままスタックマシンへpush
-  if (node->kind == ND_NUM) {
-    printf("  push %d\n", node->val);
-    return;
+    case ND_NUM:
+      printf("  push %d\n", node->val);
+      return;
+    case ND_LVAR:
+      gen_lval(node);
+      printf("  pop rax\n");
+      printf("  mov rax, [rax]\n");
+      printf("  push rax\n");
+      return;
+    case ND_ASSIGN:
+      gen_lval(node->lhs);
+      gen(node->rhs);
+
+      printf("  pop rdi\n");
+      printf("  pop rax\n");
+      printf("  mov [rax], rdi\n");
+      printf("  push rdi\n");
+
+      return;
   }
 
   // 数値以外の時は二項演算子ノードのはずなので、左辺と右辺をそれぞれ再帰的にgen()する
