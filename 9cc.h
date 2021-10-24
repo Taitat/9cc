@@ -87,7 +87,8 @@ Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
-
+Node *code[100];
+void program();
 
 //
 // Code generator
