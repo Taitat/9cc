@@ -40,6 +40,14 @@ Token *consume_ident(){
   return token;
 }
 
+bool is_alpha(char c) {
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_';
+}
+
+bool is_alnum(char c) {
+  return is_alpha(c) || ('0' <= c && c <= '9');
+}
+
 // トークンが期待している記号の場合はトークンを次に進める
 // そうでないならエラーを報告する
 void expect(char *op){
@@ -124,9 +132,11 @@ Token *tokenize() { // *p には渡された文字列の1文字目が入る
       continue;
     }
 
-    if ('a' <= *p && *p <= 'z') {
-      cur = new_token(TK_IDENT, cur, p++, 1);
-      cur->len = 1;
+    if (is_alpha(*p)) {
+      char *q = p++;
+      while (is_alnum(*p))
+        p++;
+      cur = new_token(TK_IDENT, cur, q, p - q);
       continue;
     }
 
