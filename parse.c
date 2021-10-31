@@ -141,6 +141,13 @@ Node *unary() {
   return primary();
 }
 
+
+LVar *find_lvar(Token *tok) {
+  for (LVar *var = locals; var; var = var->next)
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+      return var;
+  return NULL;
+}
 // primary = "(" expr ")" | num
 // primaryはexprを再帰的に呼び出すか、数値をそのまま返す。
 Node *primary() {
@@ -157,9 +164,21 @@ Node *primary() {
   if (tok) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
-    node->offset = (tok->str[0] - 'a' + 1 ) * 8;
+  
+    LVar *lvar = find_lvar(tok);
+    if (lvar) {
+      node->offset = lvar->offset;
+    } else {
+      lvar = calloc(1, sizeof(LVar));
+      lvar->next = locals;
+      lvar->name = tok->str;
+      lvar->len = tok->len;
+      lvar->offset = 8;
+      node->offset = lvar->offset;
+      locals = lvar;
+    }
     return node;
-  }
+}
 
   // 現在のトークンが数値の場合はここまで降りてきて、そのまま数値のノードを作って返す
   // (さらにexpect_number によってトークンが進む)

@@ -77,6 +77,17 @@ struct Node {
   int offset;     // kindがND_LVARの場合のみ使う
 };
 
+typedef struct LVar LVar;
+
+struct LVar {
+  LVar *next;
+  char *name;
+  int len;
+  int offset;
+};
+
+LVar *locals;
+
 Node *new_node(NodeKind kind);
 Node *new_binary(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_num(int val);
