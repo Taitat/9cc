@@ -141,6 +141,13 @@ Node *unary() {
   return primary();
 }
 
+
+LVar *find_lvar(Token *tok) {
+  for (LVar *var = locals; var; var = var->next)
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+      return var;
+  return NULL;
+}
 // primary = "(" expr ")" | num
 // primaryはexprを再帰的に呼び出すか、数値をそのまま返す。
 Node *primary() {
